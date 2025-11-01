@@ -1,535 +1,419 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Digit - Self-Custody Crypto Wallet</title>
-  <style>
-    :root {
-      --bg-color: #fafafa;
-      --text-color: #0b0b0b;
-      --card-bg: #fff;
-      --link-color: #1a73e8;
-      --screen-bg: #0b0b0b;
-      --nav-bg: #111;
-      --footer-bg: #f1f1f1;
-      --footer-text: #555;
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Digit – Modern Crypto Wallet (Animated + Dark Mode)</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#ffffff; --surface:#fefefe; --muted:#666; --text:#111; --accent:#2f6df6;
+    --card:#ffffff; --soft:#f3f6ff;
+  }
+  body.dark{
+    --bg:#0f1113; --surface:#0b0c0d; --muted:#a9a9a9; --text:#e8e8e8;
+    --card:#111316; --soft:#0f1724;
+  }
 
-    body.dark {
-      --bg-color: #0b0b0b;
-      --text-color: #f5f5f5;
-      --card-bg: #121212;
-      --link-color: #00ffff;
-      --screen-bg: #1a1a1a;
-      --nav-bg: #000;
-      --footer-bg: #111;
-      --footer-text: #aaa;
-    }
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--text);
+    display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:28px 36px;
+    transition:background .35s,color .35s;
+  }
 
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: var(--bg-color);
-      color: var(--text-color);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      transition: background 0.5s, color 0.5s;
-      overflow-x: hidden;
-    }
+  /* Header */
+  header{
+    width:100%;max-width:1200px;display:flex;justify-content:space-between;align-items:center;margin-bottom:44px;
+  }
+  .logo{font-size:26px;font-weight:800;letter-spacing:-0.3px;}
+  nav{display:flex;align-items:center;gap:12px;}
+  nav a{color:var(--accent);text-decoration:none;font-weight:600;}
+  .mode-toggle{
+    cursor:pointer;border-radius:10px;padding:8px 10px;background:transparent;border:1px solid rgba(0,0,0,0.04);
+    display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--text);
+  }
+  body.dark .mode-toggle{border-color:rgba(255,255,255,0.06);}
 
-    body.dark {
-      background: radial-gradient(circle at 20% 20%, #111 0%, #000 60%) fixed;
-      animation: neonPulse 10s infinite alternate;
-      background-size: 200% 200%;
-    }
+  /* Layout */
+  .container{display:flex;gap:32px;width:100%;max-width:1200px;align-items:center;justify-content:space-between;}
+  .left{flex:1;min-width:300px;}
+  .left h1{font-size:40px;margin-bottom:14px;}
+  .left p{color:var(--muted);line-height:1.45;margin-bottom:20px;}
+  .cta{background:var(--accent);color:#fff;padding:12px 18px;border-radius:10px;border:none;cursor:pointer;font-weight:700;}
+  .cta:active{transform:translateY(1px)}
 
-    @keyframes neonPulse {
-      0% { box-shadow: inset 0 0 50px #0ff; }
-      50% { box-shadow: inset 0 0 80px #0ff3, inset 0 0 100px #1a73e8; }
-      100% { box-shadow: inset 0 0 60px #4a90e2; }
-    }
+  /* iPhone mockup */
+  .right{flex:1;display:flex;align-items:center;justify-content:center;min-width:340px;}
+  .iphone{
+    width:332px;height:670px;border-radius:42px;padding:12px;background:#111;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 14px 40px rgba(0,0,0,0.45);
+  }
+  .screen{
+    width:100%;height:100%;border-radius:30px;background:var(--surface);overflow:hidden;display:flex;flex-direction:column;
+    box-shadow:inset 0 1px rgba(0,0,0,0.02);
+    transition:background .35s;
+  }
 
-    header {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 50px;
-      background-color: var(--card-bg);
-      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      transition: background 0.4s;
-    }
+  /* status */
+  .status-bar{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;font-size:12px;color:var(--muted);}
+  .status-icons i{margin-left:8px}
 
-    header h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text-color);
-    }
+  /* app header */
+  .app-header{padding:10px 12px;font-weight:700;text-align:center;border-bottom:1px solid rgba(0,0,0,0.04);background:transparent}
 
-    header a {
-      text-decoration: none;
-      color: var(--link-color);
-      font-weight: 500;
-      font-size: 1rem;
-      transition: color 0.3s;
-    }
+  /* Views container & animated transitions */
+  .views{position:relative;flex:1;overflow:hidden}
+  .app-view{
+    position:absolute;inset:0;padding-bottom:0;overflow:auto;
+    display:flex;flex-direction:column;align-items:stretch;padding:0 0 12px 0;
+    background:transparent;
+  }
+  .app-view.hidden{display:none}
+  /* animation classes */
+  .animate-in-left{animation:slideInFromLeft .36s cubic-bezier(.2,.9,.2,1) forwards}
+  .animate-in-right{animation:slideInFromRight .36s cubic-bezier(.2,.9,.2,1) forwards}
+  .animate-out-left{animation:slideOutToLeft .36s cubic-bezier(.2,.9,.2,1) forwards}
+  .animate-out-right{animation:slideOutToRight .36s cubic-bezier(.2,.9,.2,1) forwards}
 
-    main {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex: 1;
-      padding: 50px;
-      gap: 60px;
-      transition: color 0.4s;
-    }
+  @keyframes slideInFromRight{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+  @keyframes slideInFromLeft{from{transform:translateX(-100%);opacity:0}to{transform:translateX(0);opacity:1}}
+  @keyframes slideOutToRight{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+  @keyframes slideOutToLeft{from{transform:translateX(0);opacity:1}to{transform:translateX(-100%);opacity:0}}
 
-    .text-section {
-      max-width: 420px;
-      position: relative;
-      z-index: 2;
-    }
+  /* content building blocks */
+  .pad-16{padding:14px 16px}
+  .card{background:var(--card);border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,0.04);margin-bottom:12px;transition:background .3s}
+  .muted{color:var(--muted);font-size:13px}
+  .big{font-size:22px;font-weight:800}
+  .tiny{font-size:12px;color:var(--muted)}
 
-    .text-section h2 {
-      font-size: 2.7rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-      line-height: 1.2;
-    }
+  /* Wallet specifics */
+  .balance-card{margin:14px;padding:14px;border-radius:12px;background:var(--card)}
+  .balance-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .balance-left{display:flex;flex-direction:column}
+  .balance-change{color:#25a96a;font-weight:700;margin-top:6px}
+  .chart-wrap{height:110px;margin-top:10px}
 
-    .text-section p {
-      font-size: 1.1rem;
-      line-height: 1.6;
-      margin-bottom: 25px;
-    }
+  /* quick actions */
+  .actions{display:flex;gap:10px;padding:0 14px 6px}
+  .action-btn{
+    flex:1;background:linear-gradient(180deg,var(--accent),#1e56d6);color:#fff;padding:12px;border-radius:12px;border:none;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-weight:700;box-shadow:0 6px 18px rgba(47,109,246,0.18);
+  }
+  .action-btn i{font-size:16px}
 
-    .text-section button {
-      background-color: var(--link-color);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 14px 28px;
-      font-size: 1rem;
-      cursor: pointer;
-      box-shadow: 0 0 15px rgba(26, 115, 232, 0.5);
-      transition: all 0.4s;
-    }
+  /* movers / assets / activity lists */
+  .list{padding:0 14px 8px}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;background:var(--card);margin-bottom:8px}
+  .row .name{font-weight:700}
+  .row .change{font-weight:800;color:#25a96a}
+  .row.negative .change{color:#e04b4b}
+  .asset-left{display:flex;align-items:center;gap:10px}
+  .asset-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
 
-    .text-section button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 25px rgba(26, 115, 232, 0.8);
-    }
+  /* offers */
+  .offer-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--card);border-radius:10px;margin-bottom:8px}
+  .offer-btn{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
 
-    /* iPhone Mockup */
-    .iphone-frame {
-      position: relative;
-      width: 320px;
-      height: 640px;
-      border: 12px solid #000;
-      border-radius: 40px;
-      box-shadow: 0 0 40px rgba(0, 255, 255, 0.4);
-      background-color: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      transition: all 0.6s ease;
-    }
+  /* more */
+  .more-list{display:flex;flex-direction:column;gap:8px;padding:10px 14px}
+  .more-item{display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--card);border-radius:10px;cursor:pointer}
 
-    .iphone-notch {
-      position: absolute;
-      top: 0;
-      width: 150px;
-      height: 30px;
-      background: #000;
-      border-bottom-left-radius: 20px;
-      border-bottom-right-radius: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
-    }
+  /* bottom nav */
+  .bottom-nav{display:flex;gap:6px;padding:10px;border-top:1px solid rgba(0,0,0,0.04);background:transparent;align-items:center;justify-content:space-around}
+  .nav-item{display:flex;flex-direction:column;align-items:center;font-size:12px;color:var(--muted);cursor:pointer;width:64px}
+  .nav-item.active{color:var(--accent);font-weight:800}
 
-    .screen {
-      width: 94%;
-      height: 94%;
-      background: var(--screen-bg);
-      border-radius: 28px;
-      overflow: hidden;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      transition: background 0.4s;
-    }
+  /* overlay modal */
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;z-index:80}
+  .modal{width:360px;max-width:92%;background:var(--card);padding:18px;border-radius:12px}
+  .modal h3{margin-bottom:8px}
+  .modal p{color:var(--muted)}
 
-    .screen-content {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .view {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      padding: 20px;
-      box-sizing: border-box;
-      color: white;
-      opacity: 0;
-      transform: translateX(100%);
-      transition: transform 0.6s ease, opacity 0.6s ease;
-    }
-
-    .view.active {
-      opacity: 1;
-      transform: translateX(0);
-      z-index: 2;
-    }
-
-    .wallet-view .balance {
-      text-align: center;
-      color: #fff;
-      margin-bottom: 15px;
-    }
-
-    .wallet-view .balance h3 {
-      font-size: 2rem;
-      margin: 0;
-      text-shadow: 0 0 10px #4a90e2;
-    }
-
-    .wallet-view .balance p {
-      color: #43d17b;
-      margin: 0;
-      font-size: 0.9rem;
-    }
-
-    .wallet-view .actions {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .wallet-view .actions button {
-      background-color: #1a73e8;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 20px;
-      color: white;
-      font-size: 0.9rem;
-      cursor: pointer;
-      box-shadow: 0 0 10px rgba(26, 115, 232, 0.5);
-      transition: all 0.3s;
-    }
-
-    .wallet-view .actions button.swap {
-      background-color: #7b61ff;
-      box-shadow: 0 0 10px rgba(123, 97, 255, 0.6);
-    }
-
-    .wallet-view .actions button:hover {
-      transform: scale(1.05);
-    }
-
-    .wallet-view .assets, .wallet-view .transactions {
-      background-color: #1a1a1a;
-      margin-bottom: 15px;
-      border-radius: 10px;
-      padding: 10px;
-      color: white;
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
-    }
-
-    .wallet-view h4 {
-      margin: 0 0 8px;
-      font-size: 0.9rem;
-      color: #bbb;
-    }
-
-    .asset-item {
-      display: flex;
-      justify-content: space-between;
-      margin: 6px 0;
-    }
-
-    .transactions p {
-      font-size: 0.9rem;
-      display: flex;
-      justify-content: space-between;
-      color: #ffaf40;
-    }
-
-    .bottom-nav {
-      display: flex;
-      justify-content: space-around;
-      background-color: var(--nav-bg);
-      padding: 12px 0;
-      border-top: 1px solid #222;
-      transition: background 0.4s;
-    }
-
-    .bottom-nav button {
-      background: none;
-      border: none;
-      color: #aaa;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: color 0.3s, text-shadow 0.3s;
-    }
-
-    .bottom-nav button.active {
-      color: #00ffff;
-      text-shadow: 0 0 10px #00ffff;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      background: var(--footer-bg);
-      font-size: 0.9rem;
-      color: var(--footer-text);
-      transition: background 0.4s, color 0.4s;
-    }
-
-    footer a {
-      color: var(--link-color);
-      text-decoration: none;
-    }
-
-    .theme-toggle {
-      position: fixed;
-      right: 30px;
-      bottom: 30px;
-      background: var(--link-color);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      cursor: pointer;
-      font-size: 1.2rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-      transition: background 0.4s, transform 0.3s;
-    }
-
-    .theme-toggle:hover {
-      transform: rotate(15deg) scale(1.1);
-    }
-
-    /* Connect Wallet Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-    }
-
-    .modal.active {
-      display: flex;
-      animation: fadeIn 0.4s ease;
-    }
-
-    @keyframes fadeIn {
-      from {opacity: 0;}
-      to {opacity: 1;}
-    }
-
-    .modal-content {
-      background: #111;
-      border-radius: 16px;
-      padding: 30px;
-      color: #fff;
-      box-shadow: 0 0 25px rgba(0,255,255,0.3);
-      text-align: center;
-      width: 300px;
-      position: relative;
-    }
-
-    .modal-content h3 {
-      margin-bottom: 20px;
-      text-shadow: 0 0 10px #00ffff;
-    }
-
-    .wallet-option {
-      background: #1a1a1a;
-      padding: 12px;
-      margin-bottom: 12px;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.2s;
-    }
-
-    .wallet-option:hover {
-      background: #00ffff22;
-      transform: scale(1.05);
-    }
-
-    .close-modal {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      color: #aaa;
-      font-size: 1.3rem;
-      cursor: pointer;
-    }
-  </style>
+  /* small screens */
+  @media (max-width:880px){body{padding:20px} .container{flex-direction:column;gap:18px} .right{order:-1}}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Digit</h1>
-    <a href="#how-it-works">How it Works</a>
-  </header>
 
-  <main>
-    <div class="text-section">
-      <h2>Self-Custody Crypto Wallet</h2>
-      <p>Manage, swap, trade, and spend your crypto like cash — all in one place. Connect to Web3 and explore DApps securely with Digit.</p>
-      <button id="getStarted">Get Started</button>
-    </div>
+<header>
+  <div class="logo">Digit</div>
+  <nav>
+    <a href="#">How Digit Works</a>
+    <button id="modeToggle" class="mode-toggle" title="Toggle dark / light">
+      <i id="modeIcon" class="fa-solid fa-moon"></i><span id="modeLabel" style="font-weight:700">Dark</span>
+    </button>
+  </nav>
+</header>
 
-    <div class="iphone-frame">
-      <div class="iphone-notch"></div>
-      <div class="screen">
-        <div class="screen-content">
-          <div class="view wallet-view active" id="wallet">
-            <div class="balance">
-              <h3>$12,345.67</h3>
-              <p>+3.45%</p>
-            </div>
-            <div class="actions">
-              <button>Spend</button>
-              <button class="swap">Swap</button>
-            </div>
-            <div class="assets">
-              <h4>My Assets</h4>
-              <div class="asset-item"><span>Bitcoin</span><span>0.25 BTC</span></div>
-              <div class="asset-item"><span>Ethereum</span><span>2.35 ETH</span></div>
-            </div>
-            <div class="transactions">
-              <h4>Recent Transactions</h4>
-              <p><span>Sent to John</span><span>$100</span></p>
-            </div>
-          </div>
-
-          <div class="view" id="settings">
-            <h3>Settings</h3>
-            <p>Switch themes, manage notifications, and secure your wallet.</p>
-            <button id="toggleTheme" style="background:#1a73e8;border:none;padding:10px 20px;border-radius:8px;color:white;">
-              Toggle Dark Mode
-            </button>
-          </div>
-
-          <div class="view" id="messages">
-            <h3>Messages</h3>
-            <p>No new messages. Stay tuned for updates.</p>
-          </div>
-
-          <div class="view" id="profile">
-            <h3>Profile</h3>
-            <p>User: @digituser</p>
-            <p>Email: user@digitwallet.com</p>
-          </div>
-        </div>
-
-        <div class="bottom-nav">
-          <button class="active" data-view="wallet">Wallet</button>
-          <button data-view="settings">Settings</button>
-          <button data-view="messages">Messages</button>
-          <button data-view="profile">Profile</button>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <footer>
-    © 2025 Digit. Powered by <a href="https://wordpress.org" target="_blank">WordPress</a>.
-  </footer>
-
-  <button class="theme-toggle" id="globalToggle">🌓</button>
-
-  <!-- Connect Wallet Modal -->
-  <div class="modal" id="walletModal">
-    <div class="modal-content">
-      <span class="close-modal" id="closeModal">&times;</span>
-      <h3>Connect Your Wallet</h3>
-      <div class="wallet-option" data-wallet="MetaMask">🦊 MetaMask</div>
-      <div class="wallet-option" data-wallet="WalletConnect">🔗 WalletConnect</div>
-      <p id="walletStatus"></p>
-    </div>
+<div class="container">
+  <div class="left">
+    <h1>A modern, interactive self-custody crypto wallet</h1>
+    <p>Manage your crypto assets, see daily performance, redeem offers and track activity — with smooth animated navigation and dark mode.</p>
+    <button class="cta" id="getStarted">Get started</button>
   </div>
 
-  <script>
-    const navButtons = document.querySelectorAll('.bottom-nav button');
-    const views = document.querySelectorAll('.view');
-    let activeView = document.querySelector('.view.active');
-    const body = document.body;
-    const toggleThemeBtn = document.getElementById('toggleTheme');
-    const globalToggle = document.getElementById('globalToggle');
-    const modal = document.getElementById('walletModal');
-    const closeModal = document.getElementById('closeModal');
-    const walletOptions = document.querySelectorAll('.wallet-option');
-    const walletStatus = document.getElementById('walletStatus');
+  <div class="right">
+    <div class="iphone">
+      <div class="screen" role="application" aria-label="Digit app">
+        <div class="status-bar">
+          <div class="tiny">9:41</div>
+          <div class="status-icons muted"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></div>
+        </div>
 
-    navButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const target = document.getElementById(btn.dataset.view);
-        if (target === activeView) return;
+        <!-- Views container (absolute positioned views for slide animation) -->
+        <div class="views" id="viewsContainer">
 
-        navButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+          <!-- WALLET VIEW -->
+          <div class="app-view" id="walletView">
+            <div class="app-header">Wallet</div>
+            <div class="balance-card card pad-16">
+              <div class="balance-row">
+                <div class="balance-left">
+                  <div class="muted">Total balance</div>
+                  <div class="big">$26,524.00</div>
+                  <div class="balance-change">+4.24%</div>
+                </div>
+                <div class="tiny muted">USD • Portfolio</div>
+              </div>
+              <div class="chart-wrap">
+                <canvas id="balanceChart"></canvas>
+              </div>
+            </div>
 
-        activeView.classList.remove('active');
-        activeView.classList.add('exit-left');
+            <div class="actions pad-16">
+              <button class="action-btn" data-action="Send"><i class="fa-solid fa-arrow-up"></i><span>Send</span></button>
+              <button class="action-btn" data-action="Spend"><i class="fa-solid fa-credit-card"></i><span>Spend</span></button>
+              <button class="action-btn" data-action="Swap"><i class="fa-solid fa-retweet"></i><span>Swap</span></button>
+              <button class="action-btn" data-action="Exchange"><i class="fa-solid fa-right-left"></i><span>Exchange</span></button>
+            </div>
 
-        target.classList.add('active');
+            <div class="list pad-16">
+              <div class="section">
+                <h3>Top Movers</h3>
+                <div class="row"><div class="name">Bitcoin (BTC)</div><div class="change">+3.5%</div></div>
+                <div class="row"><div class="name">Ethereum (ETH)</div><div class="change">+2.1%</div></div>
+                <div class="row negative"><div class="name">Cardano (ADA)</div><div class="change">-1.4%</div></div>
+                <div class="row"><div class="name">Solana (SOL)</div><div class="change">+4.8%</div></div>
+              </div>
 
-        setTimeout(() => {
-          activeView.classList.remove('exit-left');
-          activeView = target;
-        }, 600);
-      });
-    });
+              <div class="section" style="margin-top:8px">
+                <h3>My Assets</h3>
+                <div class="row asset">
+                  <div class="asset-left"><div class="asset-icon" style="background:#f7931a">₿</div><div class="name">Bitcoin</div></div>
+                  <div class="asset-value">$14,689.30</div>
+                </div>
+                <div class="row asset">
+                  <div class="asset-left"><div class="asset-icon" style="background:#627eea">Ξ</div><div class="name">Ethereum</div></div>
+                  <div class="asset-value">$11,884.70</div>
+                </div>
+              </div>
 
-    function toggleTheme() {
-      body.classList.toggle('dark');
-      globalToggle.textContent = body.classList.contains('dark') ? '☀️' : '🌙';
+              <div class="section" style="margin-top:8px">
+                <h3>Recent Activity</h3>
+                <div class="row activity"><div class="name">Sent to 0xA1...C4</div><div class="change">-0.05 BTC</div></div>
+                <div class="row activity"><div class="name">Received from 0xB2...E7</div><div class="change">+0.1 ETH</div></div>
+                <div class="row activity"><div class="name">Swapped BTC → USDC</div><div class="change">+500 USDC</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ACTIVITIES VIEW -->
+          <div class="app-view hidden" id="activitiesView">
+            <div class="app-header">Activities</div>
+            <div class="list pad-16">
+              <div class="section">
+                <h3>Transaction History</h3>
+                <div class="row activity"><div class="name">Swap ETH → USDT</div><div class="change">+$350</div></div>
+                <div class="row activity"><div class="name">Send to Binance Wallet</div><div class="change">-0.02 BTC</div></div>
+                <div class="row activity"><div class="name">Received from Coinbase</div><div class="change">+0.3 ETH</div></div>
+                <div class="row activity"><div class="name">Buy: Amazon Gift Card</div><div class="change">-150₵</div></div>
+              </div>
+
+              <div class="section" style="margin-top:10px;">
+                <h3>Insights</h3>
+                <div class="card muted" style="padding:12px">Most traded asset this week: <strong>Ethereum</strong>. Transactions (7d): 6. Net: +3.2%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- OFFERS VIEW -->
+          <div class="app-view hidden" id="offersView">
+            <div class="app-header">Offers</div>
+            <div class="list pad-16">
+              <div class="section">
+                <h3>Gift Cards</h3>
+                <div class="offer-row"><div><i class="fa-brands fa-apple" style="margin-right:8px"></i>Apple Gift Card</div><button class="offer-btn" data-offer="Apple">Buy • 200₵</button></div>
+                <div class="offer-row"><div><i class="fa-brands fa-amazon" style="margin-right:8px"></i>Amazon Gift Card</div><button class="offer-btn" data-offer="Amazon">Buy • 150₵</button></div>
+                <div class="offer-row"><div><i class="fa-brands fa-spotify" style="margin-right:8px"></i>Spotify Premium</div><button class="offer-btn" data-offer="Spotify">Buy • 100₵</button></div>
+                <div class="offer-row"><div><i class="fa-brands fa-steam" style="margin-right:8px"></i>Steam Wallet</div><button class="offer-btn" data-offer="Steam">Buy • 250₵</button></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MORE VIEW -->
+          <div class="app-view hidden" id="moreView">
+            <div class="app-header">More</div>
+            <div class="more-list pad-16">
+              <div class="more-item">Profile <i class="fa-solid fa-user"></i></div>
+              <div class="more-item">Settings <i class="fa-solid fa-gear"></i></div>
+              <div class="more-item">Support <i class="fa-solid fa-headset"></i></div>
+              <div class="more-item">About Digit <i class="fa-solid fa-circle-info"></i></div>
+            </div>
+          </div>
+
+        </div> <!-- views -->
+
+        <!-- bottom nav -->
+        <div class="bottom-nav" aria-hidden="false">
+          <div class="nav-item active" data-target="walletView"><i class="fa-solid fa-wallet"></i><div class="tiny">Wallet</div></div>
+          <div class="nav-item" data-target="activitiesView"><i class="fa-solid fa-list-check"></i><div class="tiny">Activities</div></div>
+          <div class="nav-item" data-target="offersView"><i class="fa-solid fa-gift"></i><div class="tiny">Offers</div></div>
+          <div class="nav-item" data-target="moreView"><i class="fa-solid fa-ellipsis-h"></i><div class="tiny">More</div></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- modal overlay -->
+<div class="overlay" id="overlay"><div class="modal" id="modalBox"></div></div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function(){
+  // DOM refs
+  const viewsOrder = ['walletView','activitiesView','offersView','moreView'];
+  let currentId = 'walletView';
+  const navItems = document.querySelectorAll('.nav-item');
+  const views = {};
+  viewsOrder.forEach(id => { views[id] = document.getElementById(id); });
+
+  // Function: switch view with slide animation
+  function switchTo(targetId){
+    if(targetId === currentId) return;
+    const fromIndex = viewsOrder.indexOf(currentId);
+    const toIndex = viewsOrder.indexOf(targetId);
+    const direction = toIndex > fromIndex ? 'right' : 'left';
+
+    const fromView = views[currentId];
+    const toView = views[targetId];
+
+    // prepare toView
+    toView.classList.remove('hidden','animate-in-left','animate-in-right','animate-out-left','animate-out-right');
+    toView.style.display = 'block';
+
+    // assign animation classes
+    if(direction === 'right'){
+      fromView.classList.add('animate-out-left');
+      toView.classList.add('animate-in-right');
+    } else {
+      fromView.classList.add('animate-out-right');
+      toView.classList.add('animate-in-left');
     }
 
-    if (toggleThemeBtn) toggleThemeBtn.addEventListener('click', toggleTheme);
-    if (globalToggle) globalToggle.addEventListener('click', toggleTheme);
+    // update nav active
+    navItems.forEach(n=>n.classList.toggle('active', n.dataset.target === targetId));
 
-    document.getElementById('getStarted').addEventListener('click', () => {
-      modal.classList.add('active');
-    });
+    // cleanup after animation
+    const cleanup = ()=>{
+      fromView.classList.remove('animate-out-left','animate-out-right');
+      fromView.style.display = 'none';
+      toView.classList.remove('animate-in-left','animate-in-right');
+      currentId = targetId;
+      fromView.removeEventListener('animationend', cleanup);
+    };
+    fromView.addEventListener('animationend', cleanup, {once:true});
+  }
 
-    closeModal.addEventListener('click', () => {
-      modal.classList.remove('active');
-      walletStatus.textContent = '';
-    });
+  navItems.forEach(item=>{
+    item.addEventListener('click', ()=> switchTo(item.dataset.target) );
+  });
 
-    walletOptions.forEach(opt => {
-      opt.addEventListener('click', () => {
-        const wallet = opt.dataset.wallet;
-        walletStatus.textContent = `🔒 Connecting to ${wallet}...`;
-        walletStatus.style.color = '#00ffff';
-        setTimeout(() => {
-          walletStatus.textContent = `✅ ${wallet} connected successfully!`;
-        }, 1500);
-      });
-    });
-  </script>
+  // Quick actions & offers -> modal simulation
+  const overlay = document.getElementById('overlay');
+  const modalBox = document.getElementById('modalBox');
+  function openModal(title, body){
+    modalBox.innerHTML = `<h3>${title}</h3><p style="color:var(--muted)">${body}</p><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px"><button id="closeBtn" style="padding:8px 12px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer">Close</button></div>`;
+    overlay.style.display = 'flex';
+    document.getElementById('closeBtn').onclick = ()=> overlay.style.display = 'none';
+  }
+  document.getElementById('getStarted').addEventListener('click', ()=> openModal('Get Started', 'This would open onboarding or sign-in flow inside Digit.') );
+  document.querySelectorAll('.action-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> openModal(btn.dataset.action, `Demo: ${btn.dataset.action} action tapped.`) );
+  });
+  document.querySelectorAll('.offer-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> openModal('Offer Purchased', `Simulated purchase: ${btn.dataset.offer}.`));
+  });
+
+  overlay.addEventListener('click', e => { if(e.target === overlay) overlay.style.display = 'none'; });
+
+  // Chart (balance)
+  const ctx = document.getElementById('balanceChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      datasets: [{
+        label: 'Balance',
+        data: [24500,24800,24900,25100,26000,26200,26524],
+        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--accent') || '#2f6df6',
+        backgroundColor: 'rgba(47,109,246,0.12)',
+        tension: 0.35,
+        fill: true,
+        pointRadius: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: { display: false }, y: { display: false } }
+    }
+  });
+
+  // Dark mode toggle with persistence
+  const modeToggle = document.getElementById('modeToggle');
+  const modeIcon = document.getElementById('modeIcon');
+  const modeLabel = document.getElementById('modeLabel');
+
+  function applyMode(isDark){
+    document.body.classList.toggle('dark', isDark);
+    modeIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    modeLabel.textContent = isDark ? 'Light' : 'Dark';
+    // update Chart color (optional quick live update)
+    // Not reconfiguring chart dataset for brevity; Chart line uses CSS var fallback.
+  }
+
+  // initial from localStorage
+  const stored = localStorage.getItem('digit_dark_mode');
+  applyMode(stored === '1');
+
+  modeToggle.addEventListener('click', ()=>{
+    const isDark = !document.body.classList.contains('dark');
+    applyMode(isDark);
+    localStorage.setItem('digit_dark_mode', isDark ? '1' : '0');
+  });
+
+  // Accessibility: keyboard nav (Left/Right)
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'ArrowLeft' || e.key === 'ArrowRight'){
+      const idx = viewsOrder.indexOf(currentId);
+      const next = e.key === 'ArrowRight' ? Math.min(idx+1, viewsOrder.length-1) : Math.max(0, idx-1);
+      if(next !== idx) switchTo(viewsOrder[next]);
+    }
+  });
+
+  // ensure initial visibility (only wallet visible)
+  viewsOrder.forEach(id => {
+    if(id !== currentId) views[id].style.display = 'none';
+    else views[id].style.display = 'block';
+  });
+})();
+</script>
 </body>
 </html>
